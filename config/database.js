@@ -4,7 +4,7 @@ const connectDB = async () => {
   try {
     // Priority 1: Northflank Private Addon (MONGODB_URI)
     // Priority 2: Your Local/Atlas string (DB_STRING)
-    const dbURI = process.env.MONGODB_URI || process.env.DB_STRING;
+    const dbURI = process.env.NF_NELELMONGO_MONGO_SRV || process.env.MONGODB_URI || process.env.DB_STRING;
 
     const conn = await mongoose.connect(dbURI, {
       dbName: 'Nelel', // Matches the dbName in your session store
