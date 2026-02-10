@@ -1,0 +1,602 @@
+<%- include('partials/header') -%>
+
+<div class="container py-5">
+    <!-- Header Section -->
+    <div class="row align-items-center mb-4">
+        <div class="col-md-8">
+            <h1 class="display-5 fw-bold text-dark">Welcome, <%= user.userName %></h1>
+            <p class="lead text-muted">Your personalized financial roadmap at a glance.</p>
+        </div>
+        
+        <div class="col-md-4 text-md-end" id="goalContainer">
+            <div id="achievementAlert" class="alert alert-success d-inline-block shadow-sm mb-0">
+                <i class="bi bi-clock-history me-2" ></i><span id="achievementText">Calculating timeline...</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Info/Flash Messages -->
+    <% if (messages.info) { %>
+        <div class="alert alert-info alert-dismissible fade show mb-4" role="alert">
+            <%= messages.info[0].msg %>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    <% } %>
+
+    <div class="row g-4">
+        <!-- LEFT COLUMN: Charts & Interactive Tools -->
+        <div class="col-lg-8">
+            <!-- Main Projection Chart -->
+            <div class="card shadow-sm border-0 p-4 mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h2 class="h4 card-title mb-0">Savings Projection</h2>
+                        <p class="text-muted small mb-0">Adjust sliders to see your path</p>
+                    </div>
+                    <span id="outlookBadge" class="badge bg-primary bg-opacity-10 text-primary border-0 px-3 py-2">Calculating...</span>
+                </div>
+                <canvas id="projectionChart" style="max-height: 400px;"></canvas>
+            </div>
+
+            <!-- Controls Section -->
+             <div class="row rounded-4 p-4 mb-4 mx-0 border shadow-sm" style="background-color: #ffffff;">
+                <!-- Savings Rate Control -->
+                <div class="col-md-6 mb-4 mb-md-0 border-end-md pe-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label for="rateSlider" class="text-uppercase fw-bold ls-wide text-secondary" style="font-size: 0.65rem;">Savings Rate</label>
+                        <span class="fw-bold h5 mb-0 text-primary"><span id="rateVal"><%= user.targetSavingsRate %></span>%</span>
+                    </div>
+                    <input type="range" class="form-range custom-slider" id="rateSlider" min="1" max="50" value="<%= user.targetSavingsRate %>">
+                    
+                    <div class="d-flex align-items-center mt-2">
+                        <small class="text-muted" style="font-size: 0.8rem;">
+                            Monthly: <span id="monthlyContribution" class="fw-bold text-dark">$0</span>
+                        </small>
+                        <span id="savingsStatus" class="badge ms-2 px-2" style="font-size: 0.7rem; background-color: #fee2e2; color: #991b1b; border-radius: 1rem;">Critical</span>
+                    </div>
+                </div>
+
+                <!-- Expected Return Control -->
+                <div class="col-md-6 ps-md-4">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <label for="returnSlider" class="text-uppercase fw-bold ls-wide text-secondary" style="font-size: 0.65rem;">Expected Return</label>
+                        <span class="fw-bold h5 mb-0 text-primary"><span id="returnVal">7</span>%</span>
+                    </div>
+                    <input type="range" class="form-range custom-slider" id="returnSlider" min="1" max="20" value="7">
+                    
+                    <div class="form-check form-switch mt-2">
+                        <input class="form-check-input" type="checkbox" id="inflationToggle" checked>
+                        <label class="form-check-label small text-muted" for="inflationToggle" style="font-size: 0.75rem;">
+                            Adjust for Inflation (3%)
+                        </label>
+                    </div>
+                </div>
+
+                <!-- The Insight: Refined into a "Coach" style card -->
+                <div id="criticalInsight" class="col-12 d-none mt-4 p-3 rounded-4 border-0" style="background-color: #fff1f2;">
+                    <div class="d-flex align-items-start">
+                        <div class="me-3 mt-1">
+                            <i class="bi bi-lightbulb-fill text-danger" style="font-size: 1.2rem;"></i>
+                        </div>
+                        <div>
+                            <h6 class="fw-bold mb-1" style="font-size: 0.85rem; color: #991b1b;">Path to Progress</h6>
+                            <p class="mb-0 text-secondary" style="font-size: 0.85rem; line-height: 1.5;">
+                                Your rate is below the 10% retirement threshold. Finding 
+                                <span class="fw-bold text-dark">$200/mo in invisible spending</span> 
+                                would unlock a healthier trajectory.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Income Comparison Chart -->
+            <% if (user.income) { %>
+                <div class="card shadow-sm border-0 p-4">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h2 class="h5 card-title mb-0">Income Benchmarking</h2>
+                        <small class="text-muted">How you compare to the community average</small>
+                    </div>
+                    <div style="height: 300px; position: relative;">
+                        <canvas id="myChart"></canvas>
+                    </div>
+                </div>
+            <% } %>
+        </div>
+        
+        <!-- RIGHT COLUMN: COACHING & GOALS -->
+        <div class="col-lg-4">
+            <!-- Daily Fact -->            
+            <div class="card mb-3 border-0 shadow-sm" style="background: #f8fafc; border-left: 4px solid #0dcaf0 !important;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-1">
+                        <i class="bi bi-stars text-info me-2" style="font-size: 0.8rem;"></i>
+                        <small class="text-uppercase fw-bold ls-wide" style="font-size: 0.65rem; letter-spacing: 0.08em; color: #64748b;">
+                            Daily Insight
+                        </small>
+                    </div>
+                    <p class="mb-0 small fw-medium" style="color: #1e293b; line-height: 1.5;">
+                        <%= dailyFact.fact.replace(/^"|"$/g, '') %>
+                    </p>
+                </div>
+            </div>
+
+            <!-- PocketCoach -->
+            <% 
+                const accentColor = isOverBudget ? '#f59e0b' : '#10b981';
+                const linkColor = isOverBudget ? '#b45309' : '#047857';
+                const statusClass = isOverBudget ? 'text-warning' : 'text-success';
+            %>
+            <div class="mt-4 p-3 rounded-4 border-0 shadow-sm" 
+                style="background-color: #ffffff; border-left: 5px solid var(--accent-color) !important; --accent-color: <%= accentColor %>; --link-color: <%= linkColor %>;">
+                
+                <div class="d-flex align-items-center mb-0">
+                    <i class="bi bi-compass-fill me-2 <%= statusClass %>" style="font-size: 1.1rem;"></i>
+                    <span class="text-uppercase fw-bold ls-wide" style="color: #64748b; font-size: 0.65rem; letter-spacing: 0.05em;">
+                        PocketCoach™
+                    </span>
+                </div>
+                <div class="ps-1">
+                    <p class="mb-0 text-dark fw-normal" style="font-size: 0.9rem; line-height: 1.6; color: #1e293b;">
+                        <%- smartTip %>
+                    </p>
+                    <a href="/tracker" class="btn btn-link p-0 text-decoration-none small fw-bold" 
+                    style="color: var(--link-color); font-size: 0.8rem;" id = "trackerRef">
+                        View Tracker <i class="bi bi-arrow-right ms-1"></i>
+                    </a>
+                </div>
+            </div>
+            <br>
+
+            <!-- Financial Roadmap -->
+            <div class="card shadow-sm border-0 mb-3 rounded-4 overflow-hidden" style="background: #ffffff;" id="goalsContainer">
+                <%  const totalGoal = user.goals.reduce((acc, g) => acc + (g.amount || 0), 0);
+                    const goalPercentage = ((totalGoal / user.annualNetIncome) * 100).toFixed(1);
+                %>
+                    <div class="px-3 py-2 border-bottom border-light">
+                        <h6 class="text-uppercase fw-bold ls-wide mb-0" style="color: #1e293b; font-size: 0.7rem; letter-spacing: 0.08em;">
+                            Financial Roadmap
+                        </h6>
+                    </div>
+
+                    <div class="card-body p-3">
+                        <div class="mb-3">
+                            <% user.goals.forEach(function(goal) { %>
+                                <div class="goal-item d-flex justify-content-between align-items-center mb-1">
+                                    <span class="text-secondary fw-medium" style="font-size: 0.8rem;"><%= goal.name %></span>
+                                    <span class="fw-bold text-dark" style="font-size: 0.85rem;">
+                                        $<%= (goal.amount || 0).toLocaleString() %>
+                                    </span>
+                                </div>
+                            <% }); %>
+                        </div>
+                        
+                        <div class="p-2 px-3 rounded-3" style="background-color: #f8fafc; border: 1px solid #f1f5f9;">
+                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                <span class="text-muted fw-bold text-uppercase" style="font-size: 0.6rem;">Total Target</span>
+                                <span class="fw-bold text-success" style="font-size: 1.1rem;">
+                                    $<%= totalGoal.toLocaleString() %>
+                                </span>
+                            </div>
+                            
+                            <div class="progress mb-2" style="height: 4px; background-color: #e2e8f0;">
+                                <div class="progress-bar bg-success" role="progressbar" style="width: 100%; border-radius: 4px;"></div>
+                            </div>
+                            
+                            <p class="text-muted mb-0" style="font-size: 0.75rem;">
+                                Representing <span class="text-dark fw-bold"><%= goalPercentage %>%</span> of annual income.
+                            </p>
+                        </div>
+                        <div class="d-flex justify-content-end pt-1">
+                            <a href="/profile/edit#goals-container"
+                                id="trackerRef"
+                                class="btn btn-link p-0 text-decoration-none small fw-bold d-inline-flex align-items-center gap-1"
+                                style="color:#475569; font-size:0.83rem;">
+                                Update Goals <i class="bi bi-bullseye"></i>
+                            </a>
+                        </div>
+                    </div>
+            </div>
+
+            <!-- Cost of living comparison -->
+            <% 
+                const isInitialBaseline = userStateData.code === 'TX'; 
+                const initialIsSavings = initialGeoSaving > 0;
+
+                let initialColor = '#ef4444';
+                let initialLabel = "Impact on Lifestyle";
+
+                if (isInitialBaseline) {
+                    initialColor = '#64748b';
+                    initialLabel = "Current Lifestyle Baseline";
+                } else if (initialIsSavings) {
+                    initialColor = '#10b981';
+                }
+                const isPlaceholder = !!coachGoal.isPlaceholder;
+                if (!isInitialBaseline && isPlaceholder) {
+                    initialLabel = "Lifestyle Cost Impact";
+                }
+            %>
+
+            <div class="card border-0 shadow-sm mb-3 rounded-4" style="background: #ffffff;">
+                <div class="card-body p-3">
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="bg-light text-secondary px-2 py-1 rounded-2 me-2" style="font-size: 0.8rem;">
+                            <i class="bi bi-geo-alt-fill"></i>
+                        </div>
+                        <h6 class="fw-bold text-uppercase ls-wide mb-0" style="font-size: 0.65rem; color: #64748b; letter-spacing: 0.08em;">
+                            COST OF LIVING VS. <%= userStateData.name %>
+                        </h6>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <select id="geoCompare" class="form-select border-0 bg-light rounded-3 py-1 ps-3 shadow-none" style="font-size: 0.85rem; cursor: pointer;">
+                            <% allStates.forEach(state => { %>
+                                <option value="<%= state.index %>" data-rank="<%= state.taxRank %>" <%= state.code === 'TX' ? 'selected' : '' %>>
+                                    Target: <%= state.name %>
+                                </option>
+                            <% }) %>
+                        </select>
+                    </div>
+                    
+                    <div id="geoStatusBox" class="p-3 rounded-4" 
+                        style="background-color: #f8fafc; border-left: 4px solid var(--geo-color); --geo-color: <%= initialColor %>;">
+                        
+                        <p id="geoLabel" class="mb-1 text-secondary fw-bold text-uppercase" style="font-size: 0.65rem; letter-spacing: 0.05em;">
+                            Impact on Lifestyle
+                        </p>
+                        
+                        <h3 class="fw-bold mb-2" id="geoSavingDisplay" style="color: var(--geo-color); font-size: 1.6rem; line-height: 1;">
+                            <span id="perTenK" class="text-muted fw-normal <%= isPlaceholder ? '' : 'd-none' %>" style="font-size: 0.8rem; vertical-align: middle; margin-left: 4px;">
+                                per $10k
+                            </span>
+                            <% if (isInitialBaseline) { %>
+                                $0
+                            <% } else { %>
+                                <%= initialIsSavings ? '+' : '-' %>&thinsp;$<%= Math.abs(initialGeoSaving).toLocaleString() %>
+                            <% } %>
+                        </h3>
+
+                        <p id="geoDescription" class="text-muted mb-2" style="font-size: 0.75rem; line-height: 1.4;">
+                            Analyzing lifestyle arbitrage...
+                        </p>
+
+                        <hr class="my-2 opacity-10">
+                        
+                        <p class="mb-0 text-muted" style="font-size: 0.7rem;">
+                            <i class="bi bi-info-circle me-1"></i>
+                            <span id="geoTaxRank">Texas Tax Rank: #7 in 2026</span>
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Profile Actions -->
+            <div class="d-grid gap-3">
+                <a href="/profile/edit" class="btn btn-white shadow-sm border-0 py-2 rounded-3 text-secondary fw-medium" style="background: white;">
+                    <i class="bi bi-pencil-square me-2 text-info"></i>Edit Profile
+                </a>
+                <a href="/logout" class="btn btn-link text-danger-emphasis text-decoration-none small fw-bold">
+                    <i class="bi bi-box-arrow-right me-2"></i>Log Out
+                </a>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>
+
+<!-- DATA ELEMENTS FOR CHARTS -->
+<div id="profile-data" hidden 
+     data-my-income="<%= user && user.income ? user.income : 0 %>"
+     data-avg-income="<%= typeof communityAverage !== 'undefined' ? communityAverage : 0 %>"></div>
+<div id="projection-data" hidden 
+     data-income="<%= user && user.income ? user.income : 0 %>"
+     data-goal="<%= user && user.goals ? user.goals.reduce((acc, g) => acc + (g.amount || 0), 0) : 0 %>"
+     data-age="<%= user && user.age ? user.age : 30 %>"
+     data-currentsavings="<%= user && user.currentsavings ? user.currentsavings : 0 %>"
+     data-retirement="<%= user && user.retirementAge ? user.retirementAge : 65 %>"
+     data-netincome="<%= user ? user.annualNetIncome : 0 %>"
+     data-hastransactions="<%= hasTransactions %>""
+     ></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+  // Income Comparison Chart
+  (function incomeChart() {
+    const el = document.getElementById('profile-data');
+    if (!el) return;
+    const myIncome = Number(el.dataset.myIncome) || 0;
+    const avgIncome = Number(el.dataset.avgIncome) || 0;
+    const ctx = document.getElementById('myChart');
+    if (!ctx || myIncome <= 0) return;
+
+    const userColor = 'rgba(15, 23, 42, 0.9)'; // Deep Anthracite/Navy
+    const avgColor = 'rgba(148, 163, 184, 0.25)'; // Muted Slate-Grey
+
+    new Chart(ctx, {
+    type: 'bar',
+    data: {
+        // PASSING LABELS AS ARRAYS FORCES WRAPPING ON MOBILE
+        labels: [
+        ['Your Gross', 'Income'], 
+        ['Community', 'Average']
+        ],
+        datasets: [{
+        data: [myIncome, avgIncome],
+        backgroundColor: [userColor, avgColor],
+        borderRadius: { topLeft: 10, topRight: 10 },
+        maxBarThickness: 45,
+        categoryPercentage: 0.8 // Increases space between the two bar groups
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+        legend: { display: false },
+        tooltip: {
+            backgroundColor: '#0f172a',
+            padding: 14,
+            displayColors: false,
+            callbacks: { label: (context) => ` $${context.parsed.y.toLocaleString()}` }
+        }
+        },
+        scales: {
+        x: {
+            grid: { display: false },
+            ticks: {
+            // Adjust font size specifically for mobile readability
+            font: { 
+                size: window.innerWidth < 500 ? 11 : 13, 
+                weight: 500, 
+                family: 'Ubuntu' 
+            },
+            color: '#64748b',
+            autoSkip: false, // Ensures labels don't disappear on small screens
+            padding: 10
+            }
+        },
+        y: {
+            beginAtZero: true,
+            border: { display: false },
+            grid: { color: '#f1f5f9' },
+            ticks: {
+            color: '#94a3b8',
+            font: { size: 11 , family: 'Ubuntu'}, 
+            callback: (value) => `$${value / 1000}k`
+            }
+        }
+        }
+    }
+    });
+  })();
+
+  // Projection Chart
+  (function projectionChart() {
+    const dataEl = document.getElementById('projection-data');
+    const canvasEl = document.getElementById('projectionChart');
+    if (!dataEl || !canvasEl) return;
+
+    const annualIncome = Number(dataEl.dataset.netincome) || 0;
+    const targetGoal = Number(dataEl.dataset.goal) || 0;
+    const currentAge = Number(dataEl.dataset.age) || 30;
+    const retirementAge = Number(dataEl.dataset.retirement) || 65;
+    const currentSavings = Number(dataEl.dataset.currentsavings) || 0;
+    const hasTransactions = dataEl.dataset.hastransactions === 'true';
+
+    const ctx = canvasEl.getContext('2d');
+    const chartGradient = ctx.createLinearGradient(0, 0, 0, 400);
+    chartGradient.addColorStop(0, 'rgba(75, 192, 192, 0.4)');
+    chartGradient.addColorStop(1, 'rgba(75, 192, 192, 0.0)');
+
+    let projectionChart;
+
+    function updateProjection() {
+      const rate = Number(document.getElementById('rateSlider').value) / 100;
+      const growth = 1 + (Number(document.getElementById('returnSlider').value) / 100);
+      const monthlyAmount = (annualIncome * rate) / 12; 
+      const sliderValue = rate * 100; // 1-50
+
+      document.getElementById('monthlyContribution').innerText = `$${Math.round(monthlyAmount).toLocaleString()}`;
+      document.getElementById('rateVal').innerText = document.getElementById('rateSlider').value;
+      document.getElementById('returnVal').innerText = document.getElementById('returnSlider').value;
+
+      const statusEl = document.getElementById('savingsStatus');
+      const insightEl = document.getElementById('criticalInsight');
+
+      statusEl.classList.remove('bg-danger', 'bg-warning', 'bg-success');
+
+      if (sliderValue < 10) { // Tier 1: Critical (Below 10%)
+        statusEl.innerText = "Critical";
+        statusEl.style.backgroundColor = "#fee2e2"; 
+        statusEl.style.color = "#991b1b";
+        insightEl.classList.remove('d-none');
+      } else if (sliderValue < 30) { // Tier 2: Attention (10% - 29%)
+        statusEl.innerText = "Baseline";
+        statusEl.style.backgroundColor = "#fef3c7"; 
+        statusEl.style.color = "#92400e";
+        insightEl.classList.add('d-none');
+      } else { // Tier 3: Healthy (30% and above)
+        statusEl.innerText = "Healthy";
+        statusEl.style.backgroundColor = "#dcfce7"; 
+        statusEl.style.color = "#166534";       
+        insightEl.classList.add('d-none');
+      }
+
+      let labels = [], projectedData = [], goalData = [], inflationData = [];
+      let balance = currentSavings, yearsToGoal = null;
+
+      for (let i = 0; i <= 50; i++) {
+        labels.push(`Age ${currentAge + i}`);
+        projectedData.push(Math.round(balance));
+        goalData.push(targetGoal);
+        inflationData.push(Math.round(balance / Math.pow(1.03, i)));
+
+        if (balance >= targetGoal && yearsToGoal === null) yearsToGoal = i;
+        if (yearsToGoal !== null && i >= yearsToGoal + 5 && (currentAge + i) >= retirementAge) break;
+
+        balance = (balance + (annualIncome * rate)) * growth;
+      }
+
+      document.getElementById('outlookBadge').innerText = `${labels.length - 1}-Year Outlook`;
+      const achievementEl = document.getElementById('achievementText');
+      const achievementAlert = document.getElementById('achievementAlert');
+      const icon = achievementAlert.querySelector('i');
+      function setAlertState(state) {
+        achievementAlert.classList.remove(
+            'alert-success',
+            'alert-warning',
+            'alert-danger'
+        );
+        achievementAlert.classList.add(`alert-${state}`);
+        }
+        const goalContainer = document.getElementById('goalContainer');
+        const goalsContainer = document.getElementById('goalsContainer');
+        const trackerRef = document.getElementById('trackerRef')
+
+        goalContainer.classList.toggle('d-none', !targetGoal);
+        goalsContainer.classList.toggle('d-none', !targetGoal);
+
+        trackerRef.classList.toggle('d-none', !(targetGoal && hasTransactions));
+        
+        if (achievementEl && achievementAlert) {
+            if (yearsToGoal === null) {
+                achievementEl.innerHTML =
+                    "Your goal isn't reached within 50 years. Try increasing your savings rate!";
+
+                setAlertState('danger');
+                icon.className = 'bi bi-x-circle me-2';
+                return;
+            }
+            achievementEl.innerHTML =
+                `You will hit your goal in <strong>${yearsToGoal} years</strong> (Age ${currentAge + yearsToGoal}).`;
+
+            if (yearsToGoal <= 25) {
+                setAlertState('success');
+                icon.className = 'bi bi-check-circle me-2';
+            } else if (yearsToGoal <= 50) {
+                setAlertState('warning');
+                icon.className = 'bi bi-exclamation-triangle me-2';
+            }
+        }
+
+      if (projectionChart) {
+        projectionChart.data.labels = labels;
+        projectionChart.data.datasets[0].data = projectedData;
+        projectionChart.data.datasets[1].data = goalData;
+        projectionChart.data.datasets[2].data = inflationData;
+        projectionChart.update();
+      } else {
+        projectionChart = new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: labels,
+            datasets: [
+              { label: 'Projected Savings ($)', data: projectedData, borderColor: '#2dd4bf', borderWidth: 3, pointBackgroundColor: '#2dd4bf', pointHoverRadius: 6, backgroundColor: chartGradient, fill: true, tension: 0.4 },
+              { label: 'Goal Target', data: goalData, borderColor: '#f43f5e', borderDash: [8, 4], pointRadius: 0, borderWidth: 2, fill: false },
+              { label: 'Real Purchasing Power', data: inflationData, borderColor: '#fbbf24', borderWidth: 2, borderDash: [5, 5], pointRadius: 0, fill: false,tension: 0.4 }
+            ]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: { intersect: false, mode: 'index' },
+            plugins: {
+            legend: { display: false },
+            tooltip: {backgroundColor: '#0f172a', titleFont: { size: 13, weight: '600', family: 'Ubuntu' }, bodyFont: { size: 13, family: 'Ubuntu' }, padding: 12, cornerRadius: 10, displayColors: true, boxPadding: 6, callbacks: { 
+                title: (context) => `Timeline: ${context[0].label}`,
+                label: (context) => {
+                    const label = context.dataset.label || '';
+                    const value = context.parsed.y.toLocaleString();
+                    return ` ${label}: $${value}`;
+                }
+                }
+            }
+            },
+            scales: {
+              x: { grid: { display: false }, ticks: { color: '#94a3b8', font: { size: 11, family: 'Ubuntu' } } },
+              y: { beginAtZero: true, grid: { color: '#f1f5f9' }, ticks: { color: '#94a3b8', font: { family: 'Ubuntu' }, callback: (val) => '$' + (val > 999000 ? (val/1000000).toFixed(1) + 'M' : (val/1000).toFixed(0) + 'k') } }
+            }
+          }
+        });
+      }
+    }
+
+    document.getElementById('rateSlider').addEventListener('input', updateProjection);
+    document.getElementById('returnSlider').addEventListener('input', updateProjection);
+    updateProjection();
+    document.getElementById('inflationToggle').addEventListener('change', (e) => {
+    projectionChart.setDatasetVisibility(2, e.target.checked);
+    projectionChart.update();
+});
+})();
+</script>
+
+<!-- Cost of living comparison script -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const userIndex = Number("<%= userStateData.index %>");
+    const usercurrentState = "<%= userStateData.name %>";
+    const goalAmount = Number("<%= coachGoal.amount %>");
+    const goalName = "<%= coachGoal.name %>";
+    const isPlaceholder = "<%= coachGoal.isPlaceholder %>" === "true" || goalName === "your future";
+    
+    const geoCompare = document.getElementById('geoCompare');
+    const tenKLabel = document.getElementById('perTenK');
+    const displayEl = document.getElementById('geoSavingDisplay');
+    const boxEl = document.getElementById('geoStatusBox');
+    const descEl = document.getElementById('geoDescription');
+    const labelEl = document.getElementById('geoLabel');
+
+    function updateGeo() {
+        const targetIndex = parseFloat(geoCompare.value);
+        const selectedOption = geoCompare.options[geoCompare.selectedIndex];
+        
+        // Fix: Ensure we get the name from the CURRENTLY selected option
+        const rawText = selectedOption.text;
+        const stateName = rawText.includes('Target: ') ? rawText.split('Target: ')[1] : rawText;
+        const taxRank = selectedOption.dataset.rank;
+        
+        const diffPercentage = (userIndex - targetIndex) / userIndex;
+        const result = Math.round(goalAmount * diffPercentage);
+        
+        const isCurrentState = Math.abs(userIndex - targetIndex) < 0.01;
+        const isSavings = result > 0;
+        const themeColor = isCurrentState ? '#64748b' : (isSavings ? '#10b981' : '#ef4444');
+        
+        boxEl.style.setProperty('--geo-color', themeColor);
+        displayEl.style.color = themeColor;
+
+        if (isCurrentState) {
+            labelEl.innerText = "Current Lifestyle Baseline";
+            // Use innerHTML to keep the span element alive
+            displayEl.innerHTML = `$0 <span id="perTenK" class="text-muted fw-normal d-none" style="font-size: 0.8rem; vertical-align: middle; margin-left: 4px;">per $10k</span>`;
+            descEl.innerHTML = `You are viewing your current costs in <strong>${stateName}</strong>. This is your baseline for all other comparisons.`;
+        } else {
+            const absResult = Math.abs(result).toLocaleString();
+            const prefix = result >= 0 ? '+' : '-';
+            
+            // Re-render display with the span inside
+            const badgeClass = isPlaceholder ? '' : 'd-none';
+            displayEl.innerHTML = `${prefix}\u2009$${absResult} <span id="perTenK" class="text-muted fw-normal ${badgeClass}" style="font-size: 0.8rem; vertical-align: middle; margin-left: 4px;">per $10k</span>`;
+
+            if (isPlaceholder) {
+                labelEl.innerText = "Buying Power Difference";
+                descEl.innerHTML = `In <strong>${stateName}</strong>, every $10,000 of ${usercurrentState} buying power effectively becomes <strong>$${(10000 + result).toLocaleString()}</strong>.`;
+            } else {
+                labelEl.innerText = "Impact on Goal";
+                descEl.innerHTML = isSavings
+                    ? `Lower costs in <strong>${stateName}</strong> effectively "find" <strong>$${absResult}</strong> for your "${goalName}" goal.`
+                    : `Higher costs in <strong>${stateName}</strong> effectively increase the price of your "${goalName}" goal by <strong>$${absResult}</strong>.`;
+            }
+        }
+        document.getElementById('geoTaxRank').innerText = `${stateName} Tax Rank: #${taxRank} in 2026`;
+    }
+
+    geoCompare.addEventListener('change', updateGeo);
+    updateGeo(); // Force immediate update to sync with the dropdown selection
+});
+
+</script>
+
+<%- include('partials/footer') -%>

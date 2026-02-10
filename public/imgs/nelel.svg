@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Nelel Financial Roadmap Logo - 2026 -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+	 viewBox="0 0 512 512" xml:space="preserve">
+    <!-- Sophisticated Navy Background Circle -->
+    <circle cx="256" cy="256" r="256" fill="#0f172a"/>
+    
+    <g transform="scale(16)">
+        <!-- The Original Growth Path (Scaled for 512px) -->
+        <path d="M8 24V14M16 24V8M24 24V18" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M4 28H28" stroke="#ffffff" stroke-width="2" stroke-linecap="round" opacity="0.2"/>
+    </g>
+</svg>

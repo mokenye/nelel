@@ -1,0 +1,209 @@
+<%- include('partials/header') -%>
+<div class="container py-5">
+    <div class="card border-0 shadow-sm mb-5 overflow-hidden">
+        <div class="card-body p-4">
+            <div class="row align-items-center">
+                <div class="col-md-4 border-end">
+                    <h1 class="fw-bold h3 mb-1">Spending Tracker</h1>
+                </div>
+                <div class="col-md-8 ps-md-4">
+                    <div class="d-flex justify-content-between align-items-end mb-2">
+                        <div>
+                            <span class="text-muted small fw-bold text-uppercase"><%= new Date().toLocaleString('default', { month: 'long' }) %> Outflow</span>
+                            <h3 class="mb-0 fw-bold">
+                                $<%= monthlyTotal.toLocaleString() %> 
+                                <small class="text-muted fw-normal fs-6">/ $<%= (user.monthlyNetIncome).toLocaleString() %></small>
+                            </h3>
+                        </div>
+                        <div class="text-end">
+                            <% 
+                                let badgeClass = "bg-success-subtle text-success border border-success";
+                                let statusText = spentPercentage + "% Capacity";
+
+                                if (spentPercentage > 70 && spentPercentage < 100) {
+                                    badgeClass = "bg-warning-subtle text-warning-emphasis border border-warning";
+                                    statusText = "Caution " + spentPercentage + "%";;
+                                } else if (spentPercentage >= 100) {
+                                    badgeClass = "bg-danger-subtle text-danger border border-danger";
+                                    statusText = "Over Budget";
+                                }
+                            %>
+                            <span class="badge <%= badgeClass %>" style="border-radius: 0.8rem;" >
+                                <%= statusText %>
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Progress Bar -->
+                    <div class="progress" style="height: 10px; background-color: #f1f5f9; position: relative;">
+                        <div style="position: absolute; left: 70%; top: 0; bottom: 0; width: 2px; background-color: #cbd5e1; z-index: 1;" title="Safe Zone Limit (70%x)"></div>
+                        <div class="progress-bar <%= progressColor %>" 
+                            role="progressbar" 
+                            data-width="<%= spentPercentage %>" 
+                            aria-valuenow="<%= spentPercentage %>"
+                            aria-valuemin="0" 
+                            aria-valuemax="100">
+                        </div> 
+                    </div>
+
+                    <!-- Footer Info -->
+                    <div class="d-flex justify-content-end mt-2">
+                        <small class="fw-bold">
+                            Remaining: 
+                            <span class="<%= (user.monthlyNetIncome - monthlyTotal) < 0 ? 'text-danger' : 'text-muted' %>">
+                                $<%= (user.monthlyNetIncome - monthlyTotal).toLocaleString() %>
+                            </span>
+                        </small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row g-4">
+        <!-- Add Expense Form -->
+        <div class="col-lg-4">
+            <div class="card shadow-sm border-0 p-4">
+                <h5 class="mb-3">Log New Expense</h5>
+                <form action="/tracker" method="POST">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Item Name</label>
+                        <input type="text" name="name" class="form-control" placeholder="e.g. Groceries" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Amount ($)</label>
+                        <input type="number" name="amount" step="0.01" class="form-control" placeholder="0.00" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Category</label>
+                        <select name="category" class="form-select">
+                            <option value="Food">Food</option>
+                            <option value="Housing">Housing</option>
+                            <option value="Transportation">Transportation</option>
+                            <option value="Entertainment">Entertainment</option>
+                            <option value="Utilities">Utilities</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100 rounded-pill">Add Transaction</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Transaction History -->
+        <div class="col-lg-8">
+            <div class="card shadow-sm border-0 p-4">
+                <h5 class="mb-3">Recent Transactions</h5>
+                <div class="table-responsive">
+                    <% if (transactions.length === 0) { %>
+                        <div class="text-center py-5">
+                            <i class="bi bi-receipt text-muted display-1"></i>
+                            <p class="text-muted mt-3">No transactions logged yet. Start by adding your first expense on the left!</p>
+                        </div>
+                    <% } else { %>
+                        <% if (messages.success) { %>
+                        <div class="alert alert-success alert-dismissible fade show border-0 shadow-sm mb-3" role="alert" style="background-color: rgba(45, 212, 191, 0.1); color: #0d9488;">
+                            <i class="bi bi-check-circle-fill me-2"></i> <%= messages.success %>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        <% } %>
+                        <% if (messages.info) { %>
+                            <div class="alert alert-warning alert-dismissible fade show border-0 shadow-sm mb-3" role="alert">
+                                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                                <%= Array.isArray(messages.info) ? messages.info[0].msg || messages.info[0] : messages.info.msg %>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        <% } %>
+                    
+                    <!--Spending by Category -->
+                    <div class="card border-0 shadow-sm mb-4">
+                        <div class="card-body">
+                            <h6 class="text-muted text-uppercase small fw-bold mb-3">Spending by Category</h6>
+                            <% 
+                            const categories = {};
+                            transactions.forEach(t => {
+                                categories[t.category] = (categories[t.category] || 0) + t.amount;
+                            });
+                            const sorted = Object.entries(categories).sort((a,b) => b[1] - a[1]);
+                            %>
+                            
+                            <% sorted.forEach(([name, amt]) => { %>
+                                <div class="mb-3">
+                                    <div class="d-flex justify-content-between mb-1 small">
+                                        <span><%= name %></span>
+                                        <span class="fw-bold">$<%= amt.toLocaleString() %></span>
+                                    </div>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar custom-color" data-width="<%= (amt / monthlyTotal) * 100 %>"></div>
+                                        <!-- added script at the bottom for setting progress bar widths without linter errors -->
+                                    </div>
+                                </div>
+                            <% }) %>
+                        </div>
+                    </div>
+                    <!-- section showing transactions -->
+                    <table class="table table-hover">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Date</th>
+                                <th>Item</th>
+                                <th>Category</th>
+                                <th class="text-end">Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% transactions.forEach(t => { %>
+                            <% const colors = { Food: 'bg-warning', Housing: 'bg-primary', Entertainment: 'bg-info', Other: 'bg-secondary' } %>
+                            <tr>
+                                <td class="small text-muted"><%= t.date.toLocaleDateString() %></td>
+                                <td class="fw-bold"><%= t.name %></td>
+                                <td>
+                                    <span class="d-inline-flex align-items-center gap-2">
+                                    <span class="rounded-circle <%= colors[t.category] || 'bg-secondary' %>" style="width:6px;height:6px"></span>
+                                    <%= t.category %>
+                                    </span>
+                                </td>
+                                <td class="text-end fw-bold">$<%= t.amount.toLocaleString() %></td>
+                                <td class="text-center">
+                                    <div class="btn-group">
+                                    <!-- Main Trash Button -->
+                                    <button type="button" class="btn btn-link text-danger p-0" onclick="this.nextElementSibling.classList.toggle('d-none'); this.classList.toggle('d-none')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                    <!-- Hidden Confirm Button -->
+                                    <div class="d-none animate__animated animate__fadeIn">
+                                        <form action="/tracker/delete/<%= t._id %>" method="POST" class="d-inline">
+                                            <button type="submit" class="btn btn-danger btn-sm py-0" style="font-size: 0.7rem; padding-left: 0.2rem; padding-right: 0.2rem; border-radius: 0.8rem;">Delete?</button>
+                                        </form>
+                                        <button type="button" class="btn btn-link text-secondary p-0 ms-1" onclick="this.parentElement.classList.toggle('d-none'); this.parentElement.previousElementSibling.classList.toggle('d-none')">
+                                            <i class="bi bi-x"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                </td>
+                            </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                  <% } %>                    
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="d-flex align-items-center justify-content-between border-top pt-4 mt-2">
+        <a href="/profile" class="btn btn-link text-muted text-decoration-none small">
+            <i class="bi bi-arrow-left me-1"></i> Back to Dashboard
+        </a>
+    </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.progress-bar').forEach(el => {
+      const width = el.dataset.width;
+      if (width) {
+        el.style.width = width + '%';
+      }
+    });
+  });
+</script>
+</div>
+<%- include('partials/footer') -%>

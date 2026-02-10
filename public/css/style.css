@@ -1,0 +1,217 @@
+@import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500;700&display=swap');
+
+:root {
+    --primary-color: #3b82f6;
+    --slate-blue: #64748b;
+    --background-gray: #f8fafc;
+    --text-dark: #0f172a;
+    --text-muted: #64748b;
+    --white: #ffffff;
+}
+
+body {
+    font-family: 'Ubuntu', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    background-color: var(--background-gray);
+    color: var(--text-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* Heavier weight for headers */
+h1, h2, h3, h4, h5, h6 {
+    font-weight: 700;
+    letter-spacing: -0.5px;
+}
+/* --- Navigation Bar --- */
+.navbar {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle depth */
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: var(--text-dark) !important;
+}
+
+.nav-link {
+    font-weight: 500;
+    color: var(--text-muted) !important;
+    transition: color 0.2s ease-in-out;
+}
+
+.nav-link:hover {
+    color: var(--primary-color) !important;
+}
+
+/* --- Cards & Dashboard Elements --- */
+.card {
+    border: 1px solid rgba(15, 23, 42, 0.08); /* Minimalist border */
+    border-radius: 16px; /* Soft, modern corners */
+    background: var(--white);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px); /* Interactive feel */
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+    background-color: transparent;
+}
+
+/* --- Buttons --- */
+.btn-primary {
+    background-color: var(--primary-color);
+    border: none;
+    font-weight: 600;
+    padding: 10px 24px;
+}
+
+.btn-primary:hover {
+    background-color: #2563eb;
+    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.rounded-pill {
+    padding-left: 1.5rem !important;
+    padding-right: 1.5rem !important;
+}
+
+/* --- Home Page (Hero) --- */
+.display-3 {
+    font-weight: 800;
+    letter-spacing: -2px;
+}
+
+.bg-primary-subtle {
+    background-color: rgba(59, 130, 246, 0.1) !important;
+}
+
+/* --- Footer --- */
+footer {
+    color: var(--text-muted);
+}
+
+footer h5 {
+    letter-spacing: -0.5px;
+}
+
+/* --- Tooltips & Badges --- */
+.badge-primary-soft {
+    background-color: rgba(59, 130, 246, 0.1);
+    color: var(--primary-color);
+    border: none;
+}
+
+.navbar-brand {
+    font-weight: 700;
+    letter-spacing: -1px;
+    color: #0f172a !important;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem; /* replaces margin-right */
+}
+
+.navbar-logo {
+    height: 84px;   /* enlarge logo */
+    width: auto;
+}
+
+.progress-bar.custom-color {
+  background-color: #7e8fbf; /* Example: a slightly muted but still strong blue */
+}
+
+#achievementAlert, #savingsStatus{
+  transition: background-color 0.4s ease, border-color 0.4s ease;
+}
+
+/* Base Card Styling */
+.coach-card {
+    border-left: 5px solid transparent !important;
+    transition: border-color 0.3s ease;
+}
+
+.coach-card.is-warning {
+    border-left-color: #f59e0b !important; /* Amber 500 */
+}
+.coach-card.is-warning .coach-icon {
+    color: #f59e0b;
+}
+
+.coach-card.is-success {
+    border-left-color: #10b981 !important; /* Emerald 500 */
+}
+.coach-card.is-success .coach-icon {
+    color: #10b981;
+}
+
+.goal-item {
+    transition: all 0.25s ease-in-out;
+    cursor: default;
+    border: 1px solid transparent;
+}
+
+.goal-item:hover {
+    background-color: #f8fafc; /* Matches your summary box */
+    padding-left: 12px !important; /* Subtle "push" effect */
+    border-color: #f1f5f9;
+}
+
+.goal-item:hover span.text-secondary {
+    color: #1e293b !important; /* Darkens text on hover for focus */
+}
+
+.custom-slider::-webkit-slider-runnable-track {
+    background: #f1f5f9;
+    height: 6px;
+    border-radius: 3px;
+}
+
+.custom-slider::-webkit-slider-thumb {
+    background: #3b82f6; /* Use your primary color */
+    border: 3px solid #ffffff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-top: -6px; /* Center thumb on track */
+}
+
+/* For the vertical divider between columns on desktop */
+@media (min-width: 768px) {
+    .border-end-md { border-right: 1px solid #f1f5f9 !important; }
+}
+
+@keyframes subtlePop {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+  100% { transform: scale(1); }
+}
+
+.animate-pop {
+  animation: subtlePop 0.3s ease-out;
+}
+
+.goal-link {
+  color: #14b8a6; /* soft teal */
+  font-size: 0.8rem;
+  text-decoration: none;
+  transition: color 0.15s ease, text-decoration-color 0.15s ease;
+}
+
+.goal-link:hover,
+.goal-link:focus-visible {
+  text-decoration: underline;
+  text-decoration-color: rgba(20, 184, 166, 0.45);
+}
+
+.goal-link:focus-visible {
+  outline: none;
+}
+
+.transition-hover {
+    transition: transform 0.3s ease, shadow 0.3s ease;
+}
+.transition-hover:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 1rem 3rem rgba(0,0,0,.08)!important;
+}
