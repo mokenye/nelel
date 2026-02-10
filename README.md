@@ -36,12 +36,12 @@ This is a web application built using Node.js, Express, and EJS, following the M
    npm start
 
 ## 📂 Project Structure
--config/: Configuration files.
--controllers/: Logic for handling requests and interacting with models.
--data/: Seed data files (json).
--middleware/: Custom Express middleware.
--models/: Database schemas (e.g., User).
--public/: Static assets (CSS, Images).
--routes/: URL routing for the application.
--utils/: Utility functions.
--views/: EJS templates for the frontend. 
+- config/: Configuration files.
+- controllers/: Logic for handling requests and interacting with models.
+- data/: Seed data files (json).
+- middleware/: Custom Express middleware.
+- models/: Database schemas (e.g., User).
+- public/: Static assets (CSS, Images).
+- routes/: URL routing for the application.
+- utils/: Utility functions.
+- views/: EJS templates for the frontend. 
