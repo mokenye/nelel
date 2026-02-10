@@ -9,6 +9,7 @@ const flash = require("express-flash");
 const logger = require("morgan");
 const connectDB = require("./config/database");
 const mainRoutes = require("./routes/main");
+const PORT = process.env.PORT || 2121;
 
 //Use .env file in config folder
 require("dotenv").config({ path: "./config/.env" });
@@ -39,9 +40,9 @@ app.use(
     resave: false,
     saveUninitialized: false,
     store: MongoStore.create({ 
-        mongoUrl: process.env.DB_STRING,
+        mongoUrl: process.env.MONGODB_URI || process.env.DB_STRING,
         dbName: 'Nelel',
-      collectionName: 'sessions'
+        collectionName: 'sessions'
         }),
   })
 );
@@ -77,8 +78,8 @@ app.use((err, req, res, next) => {
 // Start the connection process
 connectDB().then(() => {
     // ONLY start the server once we are 100% connected
-    app.listen(process.env.PORT, () => {
-        console.log(`Server is running on port ${process.env.PORT}. You better catch it!`);
+    app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}. You better catch it!`);
     });
 }).catch(err => {
     console.error("Failed to connect to MongoDB", err);
