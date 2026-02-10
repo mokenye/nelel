@@ -41,7 +41,7 @@ app.use(
     saveUninitialized: false,
     store: MongoStore.create({ 
         mongoUrl: process.env.NF_NELELMONGO_MONGO_SRV || process.env.MONGODB_URI || process.env.DB_STRING,
-        dbName: 'Nelel',
+        // dbName: 'Nelel',
         collectionName: 'sessions'
         }),
   })

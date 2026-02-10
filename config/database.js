@@ -7,7 +7,7 @@ const connectDB = async () => {
     const dbURI = process.env.NF_NELELMONGO_MONGO_SRV || process.env.MONGODB_URI || process.env.DB_STRING;
 
     const conn = await mongoose.connect(dbURI, {
-      dbName: 'Nelel', // Matches the dbName in your session store
+      // dbName: 'Nelel', // Matches the dbName in your session store
       // to specify database name, you can add { dbName: 'yourDatabaseName' } to the options object 
     });
 
