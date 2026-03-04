@@ -1,39 +1,65 @@
 <%- include('partials/header') -%>
-    <main class="container">
-        <div class="row justify-content-center">
-            <section class="col-6 mt-5">
-                <% if (locals.messages.errors) { %>
-                    <% messages.errors.forEach( el => { %>
-                        <div class="alert alert-danger"><%= el.msg %></div>
-                    <% }) %>    
-                <% } %>
-                <% if (locals.messages.info) { %>
-                    <% messages.info.forEach( el => { %>
-                        <div class="alert alert-info"><%= el.msg %></div>
-                    <% }) %>    
-                <% } %>
-                <form action="/signup" method="POST">
-                    <div class="mb-3">
-                        <label for="userName" class="form-label">User Name</label>
-                        <input type="text" class="form-control" id="userName" name="userName">
-                      </div>
-                    <div class="mb-3">
-                      <label for="exampleInputEmail1" class="form-label">Email address</label>
-                      <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp" name="email">
-                      <div id="emailHelp" class="form-text">We'll never share your email with anyone else.</div>
-                    </div>
-                    <div class="mb-3">
-                      <label for="password" class="form-label">Password</label>
-                      <input type="password" class="form-control" id="password" name="password">
-                    </div>
-                    <div class="mb-3">
-                        <label for="confirmPassword" class="form-label">Confirm Password</label>
-                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword">
-                      </div>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                  </form>
-            </section>
+
+<main class="d-flex flex-column" style="min-height: calc(100vh - 60px);">
+  <div class="flex-grow-1 d-flex align-items-center justify-content-center px-3 py-5">
+    <div class="w-100" style="max-width: 420px;">
+
+      <h1 class="fw-bold mb-1" style="font-size: 1.5rem; color: #0f172a; letter-spacing: -0.02em;">Create your account</h1>
+      <p class="mb-4" style="color: #64748b; font-size: 0.9rem;">Start mapping your financial future</p>
+
+      <!-- Alerts -->
+      <% if (locals.messages && locals.messages.errors) { %>
+        <% messages.errors.forEach(el => { %>
+          <div class="alert border-0 rounded-3 mb-4 py-2 px-3" style="background: #fef2f2; color: #b91c1c; font-size: 0.875rem;">
+            <%= el.msg %>
+          </div>
+        <% }) %>
+      <% } %>
+      <% if (locals.messages && locals.messages.info) { %>
+        <% messages.info.forEach(el => { %>
+          <div class="alert border-0 rounded-3 mb-4 py-2 px-3" style="background: #f0fdf9; color: #065f46; font-size: 0.875rem;">
+            <%= el.msg %>
+          </div>
+        <% }) %>
+      <% } %>
+
+      <form action="/signup" method="POST">
+        <div class="mb-3">
+          <label for="userName" class="form-label fw-medium" style="font-size: 0.8rem; color: #374151; letter-spacing: 0.02em;">Name</label>
+          <input type="text" class="form-control rounded-3 border-0 py-2 px-3"
+            id="userName" name="userName" placeholder="John Doe" autocomplete="name"
+            style="background: #f8fafc; font-size: 0.9rem; box-shadow: inset 0 0 0 1px #e2e8f0;">
         </div>
-    </main>
+        <div class="mb-3">
+          <label for="email" class="form-label fw-medium" style="font-size: 0.8rem; color: #374151; letter-spacing: 0.02em;">Email</label>
+          <input type="email" class="form-control rounded-3 border-0 py-2 px-3"
+            id="email" name="email" placeholder="you@example.com" autocomplete="email"
+            style="background: #f8fafc; font-size: 0.9rem; box-shadow: inset 0 0 0 1px #e2e8f0;">
+        </div>
+        <div class="mb-3">
+          <label for="password" class="form-label fw-medium" style="font-size: 0.8rem; color: #374151; letter-spacing: 0.02em;">Password</label>
+          <input type="password" class="form-control rounded-3 border-0 py-2 px-3"
+            id="password" name="password" placeholder="••••••••" autocomplete="new-password"
+            style="background: #f8fafc; font-size: 0.9rem; box-shadow: inset 0 0 0 1px #e2e8f0;">
+        </div>
+        <div class="mb-4">
+          <label for="confirmPassword" class="form-label fw-medium" style="font-size: 0.8rem; color: #374151; letter-spacing: 0.02em;">Confirm password</label>
+          <input type="password" class="form-control rounded-3 border-0 py-2 px-3"
+            id="confirmPassword" name="confirmPassword" placeholder="••••••••" autocomplete="new-password"
+            style="background: #f8fafc; font-size: 0.9rem; box-shadow: inset 0 0 0 1px #e2e8f0;">
+        </div>
+        <button type="submit" class="btn w-100 py-2 rounded-3 fw-semibold"
+          style="background: #0f172a; color: #fff; font-size: 0.9rem; letter-spacing: 0.01em; box-shadow: 0 0 20px rgba(16,185,129,0.15), 0 2px 6px rgba(15,23,42,0.2);">
+          Create account
+        </button>
+      </form>
+
+      <p class="text-center mt-4 mb-0" style="font-size: 0.875rem; color: #94a3b8;">
+        Already have an account? <a href="/login" class="text-decoration-none fw-medium" style="color: #10b981;">Sign in</a>
+      </p>
+
+    </div>
+  </div>
+</main>
 
 <%- include('partials/footer') -%>

@@ -1,106 +1,189 @@
 <%- include('partials/header') -%>
 
-<main style="background-color: #ffffff;">
-    <!-- Hero Section -->
-    <section class="py-5 overflow-hidden">
-        <div class="container py-5">
-            <div class="row align-items-center g-5">
-                <div class="col-lg-6">
-                    <!-- High-end badge style -->
-                    <div class="d-flex align-items-center mb-3">
-                        <span class="badge rounded-pill bg-info-subtle text-info border border-info-subtle px-3 py-2">
-                            2026 Roadmap Engine
-                        </span>
-                        <small class="ms-3 text-uppercase fw-bold ls-wide text-muted" style="font-size: 0.65rem; letter-spacing: 0.1em;">
-                            Now Live
-                        </small>
-                    </div>
+<main>
 
-                    <h1 class="display-3 fw-bold mb-4" style="color: #0f172a; letter-spacing: -0.02em; line-height: 1.1;">
-                        Take Control of <br><span class="text-primary" style="color: #3b82f6 !important;">Your Future.</span>
-                    </h1>
-                    
-                    <p class="lead text-secondary mb-5" style="line-height: 1.7; font-size: 1.15rem;">
-                        Nelel is the intelligent retirement companion designed to help you visualize, track, and achieve your life goals through <span class="text-dark fw-medium">real-time financial projections.</span>
-                    </p>
+  <!-- ── Hero ───────────────────────────────────────── -->
+  <!-- Warm off-white with a faint teal-to-white radial — not flat white -->
+  <section class="py-5 overflow-hidden" style="background: radial-gradient(ellipse 80% 60% at 65% 40%, rgba(16,185,129,0.07) 0%, #ffffff 65%);">
+    <div class="container py-5">
+      <div class="row align-items-center g-5">
+        <div class="col-lg-6">
 
-                    <div class="d-flex flex-wrap gap-3">
-                        <a href="/signup" class="btn btn-dark btn-lg px-5 rounded-pill shadow-sm py-3" style="font-size: 1rem; background-color: #0f172a;">
-                            Start Your Roadmap
-                        </a>
-                        <a href="#features" class="btn btn-link text-decoration-none text-dark fw-bold px-4 py-3">
-                            How it Works <i class="bi bi-arrow-right ms-2"></i>
-                        </a>
-                    </div>
-                </div>
+          <p class="text-uppercase fw-bold mb-4" style="font-size: 0.65rem; letter-spacing: 0.18em; color: #10b981;">
+            Retirement planning &middot; Financial projections
+          </p>
 
-                <div class="col-lg-6">
-                    <!-- Elegant Abstract Graphic -->
-                    <div class="position-relative p-5 rounded-5 shadow-sm" style="background: linear-gradient(145deg, #f8fafc, #ffffff); border: 1px solid #f1f5f9;">
-                        <div class="p-4 bg-white rounded-4 shadow-sm border-start border-primary border-4 mb-4">
-                            <div class="d-flex justify-content-between mb-2">
-                                <small class="text-uppercase fw-bold text-muted" style="font-size: 0.65rem;">Projection Accuracy</small>
-                                <span class="text-success fw-bold">99.2%</span>
-                            </div>
-                            <div class="progress" style="height: 6px; background-color: #f1f5f9;">
-                                <div class="progress-bar bg-primary" style="width: 85%"></div>
-                            </div>
-                        </div>
-                        <div class="text-center py-4">
-                            <i class="bi bi-graph-up text-primary display-4 opacity-50"></i>
-                            <h4 class="fw-bold mt-3" style="color: #1e293b;">Data-Driven Future</h4>
-                            <p class="text-muted small">Your life goals, mathematically mapped.</p>
-                        </div>
-                        <!-- Decorative element -->
-                        <div class="position-absolute top-0 end-0 p-3 opacity-25">
-                            <i class="bi bi-grid-3x3-gap-fill fs-3"></i>
-                        </div>
-                    </div>
-                </div>
-            </div>
+          <h1 class="fw-bold mb-4" style="color: #0f172a; letter-spacing: -0.025em; line-height: 1.08; font-size: clamp(2.4rem, 5vw, 3.6rem);">
+            Your money has<br>a finish line.
+          </h1>
+
+          <p class="mb-5" style="font-size: 1.05rem; line-height: 1.75; max-width: 440px; color: #475569;">
+            Nelel maps your financial life against your goals with real-time projections, so you can make decisions with confidence instead of guesswork.
+          </p>
+
+          <div class="d-flex flex-wrap align-items-center gap-3">
+            <!-- Button: teal instead of near-black, with a glow -->
+            <a href="/signup" class="btn btn-lg px-5 py-3 rounded-pill fw-semibold"
+              style="font-size: 0.9rem; background-color: #0f172a; color: #fff; letter-spacing: 0.01em; box-shadow: 0 0 28px rgba(16,185,129,0.25), 0 2px 8px rgba(15,23,42,0.2);">
+              Start for free
+            </a>
+            <a href="#features" class="text-decoration-none fw-medium" style="color: #64748b; font-size: 0.9rem;">
+              See how it works &rarr;
+            </a>
+          </div>
+
         </div>
-    </section>
 
-    <!-- Features Section -->
-    <section id="features" class="py-5" style="background-color: #f8fafc;">
-        <div class="container py-5">
-            <div class="text-center mb-5 pb-3">
-                <span class="text-primary text-uppercase fw-bold" style="font-size: 0.7rem; letter-spacing: 0.2em;">The Platform</span>
-                <h2 class="fw-bold display-5 mt-2" style="color: #0f172a;">Why Nelel?</h2>
-                <p class="text-muted mx-auto" style="max-width: 500px;">Simple tools for complex financial decisions, designed for the modern investor.</p>
+        <!-- Hero graphic -->
+        <div class="col-lg-6">
+          <div class="position-relative rounded-4 overflow-hidden" style="background: #0f172a; border: 1px solid #1e293b; box-shadow: 0 40px 80px rgba(15,23,42,0.35), 0 0 0 1px rgba(16,185,129,0.08);">
+
+            <div class="d-flex align-items-center gap-2 px-4 py-3" style="border-bottom: 1px solid #1e293b;">
+              <div class="rounded-circle" style="width:10px;height:10px;background:#ef4444;opacity:0.5;"></div>
+              <div class="rounded-circle" style="width:10px;height:10px;background:#f59e0b;opacity:0.5;"></div>
+              <div class="rounded-circle" style="width:10px;height:10px;background:#22c55e;opacity:0.5;"></div>
+              <div class="ms-auto rounded" style="height:14px;width:120px;background:rgba(255,255,255,0.05);"></div>
             </div>
 
-            <div class="row g-5">
-                <div class="col-md-4">
-                    <div class="h-100 p-4 rounded-4 transition-hover bg-white border-0 shadow-sm">
-                        <div class="bg-primary-subtle text-primary rounded-3 d-inline-block p-3 mb-4">
-                            <i class="bi bi-bullseye fs-3"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Goal Oriented</h5>
-                        <p class="text-muted small mb-0" style="line-height: 1.6;">Define exactly what you're saving for, from international travel to early financial independence.</p>
-                    </div>
+            <div class="p-4">
+              <!-- Stat row -->
+              <div class="row g-3 mb-4">
+                <div class="col-4">
+                  <div class="rounded-3 p-3" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);">
+                    <div class="mb-1" style="font-size:0.6rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.1em;">On track by</div>
+                    <div class="fw-bold" style="color:#2dd4bf;font-size:1.1rem;">Age 58</div>
+                  </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="h-100 p-4 rounded-4 transition-hover bg-white border-0 shadow-sm">
-                        <div class="bg-info-subtle text-info rounded-3 d-inline-block p-3 mb-4">
-                            <i class="bi bi-people fs-3"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">Community Benchmarks</h5>
-                        <p class="text-muted small mb-0" style="line-height: 1.6;">Anonymously compare your trajectory with your peers to see where you truly stand.</p>
-                    </div>
+                <div class="col-4">
+                  <div class="rounded-3 p-3" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);">
+                    <div class="mb-1" style="font-size:0.6rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.1em;">Projected</div>
+                    <div class="fw-bold" style="color:rgba(255,255,255,0.85);font-size:1.1rem;">$1.4M</div>
+                  </div>
                 </div>
-                <div class="col-md-4">
-                    <div class="h-100 p-4 rounded-4 transition-hover bg-white border-0 shadow-sm">
-                        <div class="bg-warning-subtle text-warning rounded-3 d-inline-block p-3 mb-4">
-                            <i class="bi bi-lightning-charge fs-3"></i>
-                        </div>
-                        <h5 class="fw-bold mb-3">PocketCoach™</h5>
-                        <p class="text-muted small mb-0" style="line-height: 1.6;">Our intelligent engine suggests immediate adjustments to reach your goals years faster.</p>
-                    </div>
+                <div class="col-4">
+                  <div class="rounded-3 p-3" style="background:rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.07);">
+                    <div class="mb-1" style="font-size:0.6rem;color:rgba(255,255,255,0.35);text-transform:uppercase;letter-spacing:0.1em;">Confidence</div>
+                    <div class="fw-bold" style="color:#10b981;font-size:1.1rem;">High</div>
+                  </div>
                 </div>
+              </div>
+
+              <!-- SVG area chart -->
+              <div class="mb-1">
+                <div class="d-flex justify-content-between mb-2">
+                  <span style="font-size:0.65rem;color:rgba(255,255,255,0.3);text-transform:uppercase;letter-spacing:0.1em;">Savings Projection</span>
+                  <span style="font-size:0.65rem;color:#2dd4bf;">45-Year Outlook</span>
+                </div>
+                <svg viewBox="0 0 300 90" xmlns="http://www.w3.org/2000/svg" style="width:100%;display:block;">
+                  <defs>
+                    <linearGradient id="heroGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#10b981" stop-opacity="0.4"/>
+                      <stop offset="100%" stop-color="#10b981" stop-opacity="0.02"/>
+                    </linearGradient>
+                  </defs>
+                  <line x1="0" y1="18" x2="300" y2="18" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                  <line x1="0" y1="45" x2="300" y2="45" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                  <line x1="0" y1="72" x2="300" y2="72" stroke="rgba(255,255,255,0.05)" stroke-width="1"/>
+                  <line x1="0" y1="32" x2="300" y2="32" stroke="#f87171" stroke-width="1" stroke-dasharray="4,3" opacity="0.45"/>
+                  <text x="248" y="29" font-size="5" fill="rgba(248,113,113,0.5)">retirement goal</text>
+                  <path d="M0,85 C20,83 40,80 60,76 C80,71 100,64 120,55 C140,46 160,36 180,27 C200,19 220,13 240,9 C260,5 280,3 300,2 L300,90 L0,90 Z"
+                    fill="url(#heroGrad)"/>
+                  <path d="M0,85 C20,83 40,80 60,76 C80,71 100,64 120,55 C140,46 160,36 180,27 C200,19 220,13 240,9 C260,5 280,3 300,2"
+                    fill="none" stroke="#10b981" stroke-width="1.5" stroke-linecap="round"/>
+                  <circle cx="0"   cy="85" r="2"   fill="#10b981"/>
+                  <circle cx="100" cy="64" r="2"   fill="#10b981"/>
+                  <circle cx="200" cy="19" r="2"   fill="#10b981"/>
+                  <circle cx="300" cy="2"  r="2.5" fill="#2dd4bf"/>
+                  <text x="0"   y="90" font-size="5.5" fill="rgba(255,255,255,0.2)">Now</text>
+                  <text x="255" y="90" font-size="5.5" fill="rgba(255,255,255,0.2)">Age 58</text>
+                </svg>
+              </div>
+
+              <!-- Goal bars -->
+              <div class="d-flex flex-column gap-2 mt-3">
+                <% [
+                  { label: 'Early retirement', pct: 82, color: '#10b981' },
+                  { label: 'House in Austin',  pct: 61, color: '#2dd4bf' },
+                  { label: 'Kids university',  pct: 44, color: '#f59e0b' },
+                ].forEach(function(goal) { %>
+                  <div>
+                    <div class="d-flex justify-content-between mb-1">
+                      <span style="font-size:0.7rem;color:rgba(255,255,255,0.5);"><%=goal.label%></span>
+                      <span style="font-size:0.7rem;color:rgba(255,255,255,0.35);"><%=goal.pct%>%</span>
+                    </div>
+                    <div class="rounded-pill" style="height:3px;background:rgba(255,255,255,0.07);">
+                      <%- '<div class="rounded-pill" style="height:3px;width:' + goal.pct + '%;background:' + goal.color + ';opacity:0.8;"></div>' %>
+                    </div>
+                    </div>
+                  </div>
+                <% }) %>
+              </div>
             </div>
+          </div>
         </div>
-    </section>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Features ───────────────────────────────────── -->
+  <!-- Barely-there teal tint instead of flat cool grey -->
+  <section id="features" class="py-5" style="background: linear-gradient(180deg, #f0fdf9 0%, #f8fafc 60%);">
+    <div class="container py-5">
+
+      <div class="row align-items-end mb-5 pb-2">
+        <div class="col-lg-4">
+          <p class="text-uppercase fw-bold mb-3" style="font-size: 0.65rem; letter-spacing: 0.18em; color: #10b981;">What Nelel does</p>
+          <div style="width:2rem;height:2px;background:#10b981;"></div>
+        </div>
+        <div class="col-lg-8">
+          <h2 class="fw-bold mb-0" style="color: #0f172a; font-size: clamp(1.6rem, 3.5vw, 2.4rem); letter-spacing: -0.02em; line-height: 1.15;">
+            Built around your goals,<br>
+            <span style="color: #94a3b8;">not generic advice.</span>
+          </h2>
+        </div>
+      </div>
+
+      <!-- Features grid — white cells on tinted bg, teal top border on hover via JS-free CSS trick -->
+      <div class="row g-0" style="border: 1px solid #d1fae5; border-radius: 1rem; overflow: hidden; box-shadow: 0 1px 3px rgba(16,185,129,0.06);">
+        <div class="col-md-4 p-5 bg-white" style="border-right: 1px solid #e2e8f0;">
+          <div class="mb-4" style="color: #10b981;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/>
+            </svg>
+          </div>
+          <h5 class="fw-bold mb-2" style="color: #0f172a; font-size: 0.95rem;">Goal-first planning</h5>
+          <p class="mb-0" style="color: #64748b; font-size: 0.875rem; line-height: 1.65;">
+            Define what you're working towards — early retirement, a home abroad, financial independence — and build backwards from there.
+          </p>
+        </div>
+        <div class="col-md-4 p-5 bg-white" style="border-right: 1px solid #e2e8f0;">
+          <div class="mb-4" style="color: #10b981;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/>
+            </svg>
+          </div>
+          <h5 class="fw-bold mb-2" style="color: #0f172a; font-size: 0.95rem;">Peer benchmarks</h5>
+          <p class="mb-0" style="color: #64748b; font-size: 0.875rem; line-height: 1.65;">
+            Anonymously see how your trajectory compares to people in similar situations — not generic averages.
+          </p>
+        </div>
+        <div class="col-md-4 p-5 bg-white">
+          <div class="mb-4" style="color: #10b981;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>
+            </svg>
+          </div>
+          <h5 class="fw-bold mb-2" style="color: #0f172a; font-size: 0.95rem;">PocketCoach™</h5>
+          <p class="mb-0" style="color: #64748b; font-size: 0.875rem; line-height: 1.65;">
+            Intelligent suggestions that show you exactly what to adjust — and by how much — to reach your goals years earlier.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
 </main>
 
 <%- include('partials/footer') -%>
