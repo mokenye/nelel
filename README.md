@@ -1,4 +1,6 @@
-# Nelel – Personal Finance Tracker
+# Nelel – Personal Finance Companion
+
+![Demo](./public/imgs/nelel.gif)
 
 > A full-stack web application for tracking savings and spending with real-time insights. Built with modern web technologies and best practices for clean, maintainable code.
 
