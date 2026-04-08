@@ -13,6 +13,11 @@ router.post("/login", authController.postLogin);
 router.get("/logout", authController.logout);
 router.get("/signup", authController.getSignup);
 router.post("/signup", authController.postSignup);
+
+// OAuth Routes
+router.get("/auth/google", authController.googleAuth);
+router.get("/auth/google/callback", authController.googleAuthCallback);
+
 router.get("/profile/edit", ensureAuth, authController.getEditProfile);
 router.post(
   "/profile/editProfile", 

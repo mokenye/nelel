@@ -440,3 +440,13 @@ exports.deleteTransaction = async (req, res, next) => {
     return next(err);
   }
 };
+
+// OAuth Google Authentication
+exports.googleAuth = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
+
+exports.googleAuthCallback = passport.authenticate("google", {
+  failureRedirect: "/login",
+  successRedirect: "/profile",
+});
