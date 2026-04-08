@@ -10,10 +10,10 @@
 
 ## Features
 
-- **Secure Authentication** – User registration and login with bcrypt password hashing
+- **Secure Authentication** – User registration and login with bcrypt password hashing and Google OAuth
 - **Transaction Tracking** – Log and categorize income and expenses with detailed records
 - **Real-time Dashboard** – Visual overview of spending patterns and financial insights
-- **Smart Tax Calculation** – Automated tax computation based on 2024 US tax brackets and state rates
+- **Smart Tax Calculation** – Automated tax computation based on 2025 US tax brackets and state rates
 - **User Profiles** – Customizable accounts with editable profile information and savings goals
 - **Responsive Design** – Mobile-friendly interface built with Bootstrap
 - **Session Management** – Persistent user sessions with MongoDB integration
@@ -220,9 +220,9 @@ Northflank provides free tier hosting with no cold starts—your server stays al
 - Fixed transaction categories (no custom categories)
 - Monthly dashboard only (no historical trend analysis)
 - No data export (CSV/PDF)
-- US tax rates only (2024 brackets)
+- US tax rates only (2025 brackets)
 - No recurring transactions
-- No 2FA or OAuth login
+- No 2FA
 
 **Planned Enhancements:**
 - Recurring/scheduled transactions
