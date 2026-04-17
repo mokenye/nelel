@@ -263,10 +263,37 @@
 
                         <hr class="my-2 opacity-10">
                         
-                        <p class="mb-0 text-muted" style="font-size: 0.7rem;">
-                            <i class="bi bi-info-circle me-1"></i>
-                            <span id="geoTaxRank">Texas Tax Rank: #7 in 2026</span>
-                        </p>
+                        <div class="mt-2" style="font-size: 0.75rem; color: var(--bs-secondary-color);">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>
+                                <span 
+                                    data-bs-toggle="popover"
+                                    data-bs-placement="top"
+                                    data-bs-content="A score comparing everyday costs to the US average (100). Below 100 = cheaper, above 100 = more expensive."
+                                    tabindex="0"
+                                    style="cursor: pointer;">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                </span>
+                                <span id="geoIndexLabel">Texas CoL Index</span>
+                                </span>
+                                <span id="geoindex">92.7</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span>
+                                <span 
+                                    data-bs-toggle="popover"
+                                    data-bs-placement="top"
+                                    data-bs-content="Ranks all 50 states by overall tax burden (income, property, sales). #1 = lowest taxes, #50 = highest."
+                                    tabindex="0"
+                                    style="cursor: pointer;">
+                                    <i class="bi bi-list-ol me-1"></i>
+                                </span>
+                                <span id="geoTaxLabel">Texas Tax Rank</span>
+                                </span>
+                                <span id="geoTaxRank">#15 in 2026</span>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
@@ -590,8 +617,30 @@ document.addEventListener('DOMContentLoaded', function() {
                     : `Higher costs in <strong>${stateName}</strong> effectively increase the price of your "${goalName}" goal by <strong>$${absResult}</strong>.`;
             }
         }
-        document.getElementById('geoTaxRank').innerText = `${stateName} Tax Rank: #${taxRank} in 2026`;
+        document.getElementById('geoIndexLabel').innerText = `${stateName} CoL Index`;
+        document.getElementById('geoindex').innerText = `${targetIndex}`;
+        document.getElementById('geoTaxLabel').innerText = `${stateName} Tax Rank`;
+        document.getElementById('geoTaxRank').innerText = `#${taxRank} in 2026`;
     }
+
+    // initialize popovers
+    document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+        const pop = new bootstrap.Popover(el, { 
+            container: 'body',
+            trigger: 'manual'
+        });
+
+        el.addEventListener('click', function(e) {
+            e.stopPropagation();
+            pop.toggle();
+        });
+    });
+
+    document.addEventListener('click', function() {
+        document.querySelectorAll('[data-bs-toggle="popover"]').forEach(el => {
+            bootstrap.Popover.getInstance(el)?.hide();
+        });
+    });
 
     geoCompare.addEventListener('change', updateGeo);
     updateGeo(); // Force immediate update to sync with the dropdown selection
