@@ -28,6 +28,22 @@ module.exports = function (passport) {
   }))
 
   // Google OAuth Strategy
+  // Helper to generate a unique username
+  async function generateUniqueUsername(displayName) {
+    const base = displayName.replace(/\s+/g, '').toLowerCase();
+    
+    // Try the base username first
+    let username = base;
+    let counter = 2;
+
+    while (await User.exists({ userName: username })) {
+      username = `${base}${counter}`;
+      counter++;
+    }
+
+    return username;
+  }
+
   passport.use(
     new GoogleStrategy(
       {
@@ -37,18 +53,11 @@ module.exports = function (passport) {
       },
       async (accessToken, refreshToken, profile, done) => {
         try {
-          // Check if user already exists with this googleId
           let user = await User.findOne({ googleId: profile.id });
+          if (user) return done(null, user);
 
-          if (user) {
-            return done(null, user);
-          }
-
-          // Check if user exists with same email
           user = await User.findOne({ email: profile.emails[0].value });
-
           if (user) {
-            // Link Google account to existing user
             user.googleId = profile.id;
             user.displayName = profile.displayName;
             user.image = profile.photos[0].value;
@@ -56,13 +65,12 @@ module.exports = function (passport) {
             return done(null, user);
           }
 
-          // Create new user
           user = new User({
             googleId: profile.id,
             displayName: profile.displayName,
             email: profile.emails[0].value,
             image: profile.photos[0].value,
-            userName: profile.displayName.replace(/\s+/g, '').toLowerCase() + Math.random().toString(36).substring(2, 8),
+            userName: await generateUniqueUsername(profile.displayName),
           });
 
           await user.save();
