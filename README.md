@@ -10,10 +10,11 @@
 
 ## Features
 
-- **Secure Authentication** – User registration and login with bcrypt password hashing and Google OAuth
+- **Secure Authentication** – User registration and login with bcrypt password hashing and Google OAuth 2.0
 - **Transaction Tracking** – Log and categorize income and expenses with detailed records
 - **Real-time Dashboard** – Visual overview of spending patterns and financial insights
 - **Smart Tax Calculation** – Automated tax computation based on 2025 US tax brackets and state rates
+- **Geo Comparison** – Compare cost of living index and tax rank across US states to see the real impact on your financial goals
 - **User Profiles** – Customizable accounts with editable profile information and savings goals
 - **Responsive Design** – Mobile-friendly interface built with Bootstrap
 - **Session Management** – Persistent user sessions with MongoDB integration
@@ -178,6 +179,9 @@ Northflank provides free tier hosting with no cold starts—your server stays al
    SESSION_SECRET=your_generated_secret_here
    GROQ_API_KEY=your_groq_api_key
    PORT=2121
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   CALLBACK_URL=https://yourdomain.com/auth/google/callback
    ```
 
 4. **Deploy:**
