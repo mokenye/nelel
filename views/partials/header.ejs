@@ -29,16 +29,20 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav ms-auto align-items-center gap-2">
-                    <% if (locals.user) { %>
+                    <% if (locals.user || locals.isGuest) { %>
                         <li class="nav-item"><a class="nav-link" href="/tracker"><i class="bi bi-receipt me-1"></i> Tracker</a></li>
                         <li class="nav-item"><a class="nav-link" href="/profile">Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" href="/profile/edit"><i class="bi bi-person-gear"></i> Profile</a></li>
+                        <% if (locals.isGuest) { %>
+                            <li class="nav-item"><span class="badge text-bg-light border">Guest Mode</span></li>
+                        <% } %>
                         <li class="nav-item ms-lg-2">
                             <a class="btn btn-link text-muted text-decoration-none small fw-bold" href="/logout">Logout</a>
                         </li>
                     <% } else { %>
-                        <li class="nav-item"><a class="nav-link px-3" href="/login">Log In</a></li>
-                        <li class="nav-item">
+                        <li class="nav-item"><a class="nav-link" href="/login">Log In</a></li>
+                        <li class="nav-item"><a class="nav-link" href="/guest" style="color: #10b981; font-weight: 600;">Guest mode</a></li>
+                        <li class="nav-item ms-lg-2">
                             <a class="btn btn-dark btn-pill px-4 shadow-sm" style="background-color: #0f172a;" href="/signup">Get Started</a>
                         </li>
                     <% } %>

@@ -11,7 +11,8 @@ const connectDB = require("./config/database");
 const mainRoutes = require("./routes/main");
 const PORT = process.env.PORT || 2121;
 
-//Use .env file in config folder
+// Load root .env first, then config/.env as fallback defaults.
+require("dotenv").config();
 require("dotenv").config({ path: "./config/.env" });
 
 // Passport config
@@ -39,6 +40,11 @@ app.use(
     secret: process.env.SESSION_SECRET,
     resave: false,
     saveUninitialized: false,
+    cookie: {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      sameSite: "lax",
+      httpOnly: true,
+    },
     store: MongoStore.create({ 
         mongoUrl: process.env.NF_NELELMONGO_MONGO_SRV || process.env.MONGODB_URI || process.env.DB_STRING,
         // dbName: 'Nelel',
@@ -50,6 +56,12 @@ app.use(
 // Passport middleware
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use((req, res, next) => {
+  res.locals.user = req.user || null;
+  res.locals.isGuest = Boolean(req.session?.guestMode);
+  next();
+});
 
 //Use flash messages for errors, info, ect...
 app.use(flash());

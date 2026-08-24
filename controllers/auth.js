@@ -1,4 +1,5 @@
 const passport = require("passport");
+const { randomUUID } = require("crypto");
 const validator = require("validator");
 const User = require("../models/User");
 const Transaction = require("../models/Transaction");
@@ -7,6 +8,45 @@ const calculateNetIncome = require('../utils/taxCalculator');
 const facts = require('../data/facts.json');
 const allStates = require('../data/states.json');
 const Groq = require("groq-sdk");
+
+const GUEST_PROFILE_DEFAULTS = {
+  userName: "Guest",
+  age: undefined,
+  state: "TX",
+  income: undefined,
+  currentsavings: 0,
+  targetSavingsRate: 20,
+  retirementAge: 65,
+  monthlyNetIncome: 0,
+  annualNetIncome: 0,
+  goals: [],
+};
+
+function isGuestSession(req) {
+  return !req.user && Boolean(req.session?.guestMode);
+}
+
+function getGuestProfile(req) {
+  const existingProfile = req.session?.guestProfile || {};
+  return {
+    ...GUEST_PROFILE_DEFAULTS,
+    ...existingProfile,
+    goals: Array.isArray(existingProfile.goals) ? existingProfile.goals : [],
+  };
+}
+
+function getGuestTransactions(req) {
+  const rawTransactions = Array.isArray(req.session?.guestTransactions)
+    ? req.session.guestTransactions
+    : [];
+
+  return rawTransactions.map((t) => ({
+    ...t,
+    _id: t._id || randomUUID(),
+    amount: Number(t.amount) || 0,
+    date: new Date(t.date),
+  }));
+}
 
 exports.getLogin = (req, res) => {
   if (req.user) {
@@ -17,10 +57,25 @@ exports.getLogin = (req, res) => {
   });
 };
 
+exports.enterGuestMode = (req, res) => {
+  if (req.user) return res.redirect("/profile");
+
+  req.session.guestMode = true;
+  req.session.guestProfile = getGuestProfile(req);
+  req.session.guestTransactions = Array.isArray(req.session.guestTransactions)
+    ? req.session.guestTransactions
+    : [];
+
+  return req.session.save(() => res.redirect("/profile/edit"));
+};
+
 exports.getProfile = async (req, res, next) => {
     try {
+    const activeUser = req.user || getGuestProfile(req);
+    const guestMode = isGuestSession(req);
+
         // 1. Gatekeeper
-        if (req.user.income === undefined || req.user.age === undefined) {
+    if (activeUser.income === undefined || activeUser.age === undefined) {
             return res.redirect("/profile/edit");
         }
         // 2. Fetch Base Data
@@ -32,11 +87,13 @@ exports.getProfile = async (req, res, next) => {
         // 3. Monthly Transaction Logic
         const now = new Date();
         const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-        const transactions = await Transaction.find({ user: req.user.id }).lean();
+        const transactions = guestMode
+          ? getGuestTransactions(req)
+          : await Transaction.find({ user: req.user.id }).lean();
         const monthlyTransactions = transactions.filter(t => t.date >= startOfMonth);
         const monthlyTotal = monthlyTransactions.reduce((acc, curr) => acc + curr.amount, 0);
-        const monthlyIncome = req.user.monthlyNetIncome || 0;
-        const targetSavings = monthlyIncome * (req.user.targetSavingsRate / 100);
+        const monthlyIncome = activeUser.monthlyNetIncome || 0;
+        const targetSavings = monthlyIncome * (activeUser.targetSavingsRate / 100);
         const actualSavings = monthlyIncome - monthlyTotal;
         const isOverBudget = actualSavings < targetSavings;
         const savingsShortfall = targetSavings - actualSavings;
@@ -51,7 +108,7 @@ exports.getProfile = async (req, res, next) => {
         const topCategoryName = topCategory ? topCategory[0] : null;
         const topCategoryAmount = topCategory ? topCategory[1] : 0;
         // Pick a Random Goal
-        const userGoals = req.user.goals || [];
+        const userGoals = activeUser.goals || [];
         const hasRealGoals = userGoals.length > 0; // Check if they actually have goals
         const fallbackGoal = { 
             name: "your future", 
@@ -121,14 +178,15 @@ exports.getProfile = async (req, res, next) => {
             }
         }
         //Cost of Living
-        const userStateData = allStates.find(s => s.code === req.user.state) || { index: 100, name: "Unknown" };
+        const userStateData = allStates.find(s => s.code === activeUser.state) || { index: 100, name: "Unknown" };
         const benchmarkState = allStates.find(s => s.code === 'TX');
         const diff = (userStateData.index - benchmarkState.index) / userStateData.index;
         let initialGeoSaving = Math.round(coachGoal.amount * diff);
 
         // 7. Final Render
         return res.render("profile.ejs", { 
-            user: req.user, 
+          user: activeUser,
+          isGuestMode: guestMode,
             communityAverage, 
             monthlyTotal, 
             targetSavings, 
@@ -152,71 +210,27 @@ exports.getProfile = async (req, res, next) => {
 }
 
 exports.getEditProfile = async (req, res) => {
-  const states = [
-    { code: 'AL', name: 'Alabama' },
-    { code: 'AK', name: 'Alaska' },
-    { code: 'AZ', name: 'Arizona' },
-    { code: 'AR', name: 'Arkansas' },
-    { code: 'CA', name: 'California' },
-    { code: 'CO', name: 'Colorado' },
-    { code: 'CT', name: 'Connecticut' },
-    { code: 'DE', name: 'Delaware' },
-    { code: 'FL', name: 'Florida' },
-    { code: 'GA', name: 'Georgia' },
-    { code: 'HI', name: 'Hawaii' },
-    { code: 'ID', name: 'Idaho' },
-    { code: 'IL', name: 'Illinois' },
-    { code: 'IN', name: 'Indiana' },
-    { code: 'IA', name: 'Iowa' },
-    { code: 'KS', name: 'Kansas' },
-    { code: 'KY', name: 'Kentucky' },
-    { code: 'LA', name: 'Louisiana' },
-    { code: 'ME', name: 'Maine' },
-    { code: 'MD', name: 'Maryland' },
-    { code: 'MA', name: 'Massachusetts' },
-    { code: 'MI', name: 'Michigan' },
-    { code: 'MN', name: 'Minnesota' },
-    { code: 'MS', name: 'Mississippi' },
-    { code: 'MO', name: 'Missouri' },
-    { code: 'MT', name: 'Montana' },
-    { code: 'NE', name: 'Nebraska' },
-    { code: 'NV', name: 'Nevada' },
-    { code: 'NH', name: 'New Hampshire' },
-    { code: 'NJ', name: 'New Jersey' },
-    { code: 'NM', name: 'New Mexico' },
-    { code: 'NY', name: 'New York' },
-    { code: 'NC', name: 'North Carolina' },
-    { code: 'ND', name: 'North Dakota' },
-    { code: 'OH', name: 'Ohio' },
-    { code: 'OK', name: 'Oklahoma' },
-    { code: 'OR', name: 'Oregon' },
-    { code: 'PA', name: 'Pennsylvania' },
-    { code: 'RI', name: 'Rhode Island' },
-    { code: 'SC', name: 'South Carolina' },
-    { code: 'SD', name: 'South Dakota' },
-    { code: 'TN', name: 'Tennessee' },
-    { code: 'TX', name: 'Texas' },
-    { code: 'UT', name: 'Utah' },
-    { code: 'VT', name: 'Vermont' },
-    { code: 'VA', name: 'Virginia' },
-    { code: 'WA', name: 'Washington' },
-    { code: 'WV', name: 'West Virginia' },
-    { code: 'WI', name: 'Wisconsin' },
-    { code: 'WY', name: 'Wyoming' }
-  ];
-
   if (req.user) {
-    return res.render("editProfile.ejs", { user: req.user, states: states });
+    return res.render("editProfile.ejs", { user: req.user, states: allStates, isGuestMode: false });
   }
+
+  if (isGuestSession(req)) {
+    return res.render("editProfile.ejs", { user: getGuestProfile(req), states: allStates, isGuestMode: true });
+  }
+
   res.redirect("/login");
 }
 
 exports.postEditProfile = async (req, res) => {
   const result = validationResult(req);
+  const guestMode = isGuestSession(req);
+  const currentProfile = guestMode ? getGuestProfile(req) : req.user?._doc;
+
   if (!result.isEmpty()) {
         return res.render("editProfile.ejs", { 
-            user: { ...req.user._doc, ...req.body }, 
-            states: allStates
+            user: { ...currentProfile, ...req.body },
+            states: allStates,
+            isGuestMode: guestMode,
         });
     }
 
@@ -237,6 +251,22 @@ exports.postEditProfile = async (req, res) => {
 
     // 2. Perform Tax Calculations (using your utility)
     const updatedTaxData = calculateNetIncome(Number(income), state);
+
+    if (guestMode) {
+      req.session.guestProfile = {
+        ...getGuestProfile(req),
+        age: Number(age),
+        income: Number(income),
+        state,
+        retirementAge: Number(retirementAge),
+        currentsavings: Number(currentsavings),
+        targetSavingsRate: Number(targetSavingsRate),
+        goals,
+        monthlyNetIncome: updatedTaxData.monthlyNet,
+        annualNetIncome: updatedTaxData.annualNet,
+      };
+      return req.session.save(() => res.redirect("/profile"));
+    }
 
     // 3. Update User Document
     await User.findByIdAndUpdate(req.user.id, {
@@ -288,6 +318,9 @@ exports.postLogin = (req, res, next) => {
       if (err) {
         return next(err);
       }
+      delete req.session.guestMode;
+      delete req.session.guestProfile;
+      delete req.session.guestTransactions;
       return res.redirect("/profile");
     });
   })(req, res, next);
@@ -371,13 +404,17 @@ exports.postSignup = async (req, res, next) => {
 
 exports.getTracker = async (req, res, next) => {
   try {
-    const transactions = await Transaction.find({ user: req.user.id }).lean().sort({ date: -1 });
+    const guestMode = isGuestSession(req);
+    const activeUser = req.user || getGuestProfile(req);
+    const transactions = guestMode
+      ? getGuestTransactions(req).sort((a, b) => b.date - a.date)
+      : await Transaction.find({ user: req.user.id }).lean().sort({ date: -1 });
     const now = new Date();
     const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
     const monthlyTotal = transactions
       .filter(t => t.date >= startOfMonth)
       .reduce((acc, curr) => acc + curr.amount, 0);
-    const income = req.user.monthlyNetIncome || 1; // Avoid division by zero
+    const income = activeUser.monthlyNetIncome || 1; // Avoid division by zero
     const spentPercentage = Math.min(monthlyTotal / income * 100, 100); // Cap at 100%
     let progressColor = "bg-success"; // under 70%
     if (spentPercentage >= 100) {
@@ -385,7 +422,14 @@ exports.getTracker = async (req, res, next) => {
     } else if (spentPercentage > 70) {
       progressColor = "bg-warning"; // 70% or more Warning
     }
-    return res.render("tracker.ejs", { user: req.user, transactions: transactions, monthlyTotal: monthlyTotal, spentPercentage: spentPercentage.toFixed(1), progressColor: progressColor });
+    return res.render("tracker.ejs", {
+      user: activeUser,
+      transactions,
+      monthlyTotal,
+      spentPercentage: spentPercentage.toFixed(1),
+      progressColor,
+      isGuestMode: guestMode,
+    });
   } catch (err) {
     console.error("getTracker error", err);
     if (res.headersSent) return;
@@ -395,6 +439,7 @@ exports.getTracker = async (req, res, next) => {
 
 exports.postTracker = async (req, res, next) => {
   try {
+    const guestMode = isGuestSession(req);
     const { name, amount, category } = req.body;
     // 1. Basic validation: Essential for security and DB health
     if (!name || !amount || !category) {
@@ -403,6 +448,37 @@ exports.postTracker = async (req, res, next) => {
     }
     const cleanName = name.trim();
     const cleanAmount = Number(amount);
+
+    if (guestMode) {
+      const oneMinuteAgo = new Date(Date.now() - 60000);
+      const guestTransactions = getGuestTransactions(req);
+      const isDoubleClicked = guestTransactions.find(
+        (t) =>
+          t.name.toLowerCase() === cleanName.toLowerCase() &&
+          Number(t.amount) === cleanAmount &&
+          t.date >= oneMinuteAgo
+      );
+
+      if (isDoubleClicked) {
+        req.flash("info", { msg: "This expense was just logged. Did you mean to add it again?" });
+        return req.session.save(() => res.redirect("/tracker"));
+      }
+
+      req.session.guestTransactions = [
+        ...guestTransactions,
+        {
+          _id: randomUUID(),
+          name: cleanName,
+          amount: cleanAmount,
+          category,
+          date: new Date().toISOString(),
+        },
+      ];
+
+      req.flash("success", "Expense logged successfully!");
+      return req.session.save(() => res.redirect("/tracker"));
+    }
+
     const oneMinuteAgo = new Date(Date.now() - 60000); // 1 minute window to check for duplicates
     const isDoubleClicked = await Transaction.findOne({
       user: req.user.id,
@@ -431,6 +507,21 @@ exports.postTracker = async (req, res, next) => {
 exports.deleteTransaction = async (req, res, next) => {
   try {
     const transactionId = req.params.id;
+
+    if (isGuestSession(req)) {
+      const guestTransactions = getGuestTransactions(req);
+      req.session.guestTransactions = guestTransactions
+        .filter((t) => String(t._id) !== String(transactionId))
+        .map((t) => ({
+          _id: t._id,
+          name: t.name,
+          amount: t.amount,
+          category: t.category,
+          date: t.date,
+        }));
+      return req.session.save(() => res.redirect('/tracker'));
+    }
+
     await Transaction.deleteOne({ _id: transactionId, user: req.user.id });
     console.log("Deleted Transaction");
     return res.redirect('/tracker');
