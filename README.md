@@ -5,7 +5,7 @@
 > A full-stack web application for tracking savings and spending with real-time insights. Built with modern web technologies and best practices for clean, maintainable code.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)](https://nodejs.org)
+[![Node.js](https://img.shields.io/badge/Node.js-20.19+-green.svg)](https://nodejs.org)
 [![MongoDB](https://img.shields.io/badge/MongoDB-7.0+-brightgreen.svg)](https://www.mongodb.com)
 
 ## Features
@@ -13,7 +13,7 @@
 - **Secure Authentication** – User registration and login with bcrypt password hashing and Google OAuth 2.0
 - **Transaction Tracking** – Log and categorize income and expenses with detailed records
 - **Real-time Dashboard** – Visual overview of spending patterns and financial insights
-- **Smart Tax Calculation** – Automated tax computation based on 2025 US tax brackets and state rates
+- **Smart Tax Calculation** – Estimated net income based on 2026 federal tax brackets, payroll taxes, and state income tax rates
 - **Geo Comparison** – Compare cost of living index and tax rank across US states to see the real impact on your financial goals
 - **User Profiles** – Customizable accounts with editable profile information and savings goals
 - **Responsive Design** – Mobile-friendly interface built with Bootstrap
@@ -42,7 +42,7 @@
 ## Quick Start
 
 ### Prerequisites
-- Node.js (v18 or higher)
+- Node.js (v20.19 or higher)
 - MongoDB instance (local or MongoDB Atlas)
 - npm or yarn
 
@@ -170,7 +170,7 @@ Northflank provides free tier hosting with no cold starts—your server stays al
    - **Build command:** `npm install`
    - **Start command:** `node server.js`
    - **Port:** `2121`
-   - **Node version:** `18`
+   - **Node version:** `20.19` or higher
 
 3. **Set environment variables:**
    In Northflank dashboard, go to **Secrets** and add:
@@ -224,7 +224,7 @@ Northflank provides free tier hosting with no cold starts—your server stays al
 - Fixed transaction categories (no custom categories)
 - Monthly dashboard only (no historical trend analysis)
 - No data export (CSV/PDF)
-- US tax rates only (2025 brackets)
+- US tax estimates only (2026 single-filer federal brackets; state tax is approximate)
 - No recurring transactions
 - No 2FA
 
